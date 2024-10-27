@@ -116,7 +116,7 @@ horario_ici = {
 
 profesores_ici = {
     'Estructura de datos': ['Moran Lopez Luis Eduardo'],
-    'Metodos numericos': ['Sierra Andrade David Alejandro'],
+    'Metodos Numericos': ['Sierra Andrade David Alejandro'],
     'Programacion Funcional': ['Mata Lopez Walter Alexander'],
     'Interconexion de Redes': ['Diaz Hernandez Juan Antonio'],
     'Sistemas Digitales y Embebidos': ['Bricio Chapula Carlos Adrian'],
