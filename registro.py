@@ -16,7 +16,7 @@ if 'profesores' not in st.session_state:
 
 fechasRegistradas = []  # Almacena las fechas ya registradas
 
-def crear_pdf(datos):
+def crear_pdf(datos, tipo_reporte, nombre):
     # Crear una instancia de FPDF
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -34,7 +34,7 @@ def crear_pdf(datos):
     pdf.ln(10)
 
     # Establecer el tipo de fuente para el contenido (Arial, tamaño 12)
-    pdf.set_font('Arial', '', 12)
+    pdf.set_font('Arial', '', 9)
 
     # Encabezados de la tabla
     header = ['ID', 'Nombre', 'Fecha', 'Materia', 'Día', 'Horario', 'Asistencia', 'Carrera']
@@ -58,6 +58,67 @@ def crear_pdf(datos):
 
     # Guardar el archivo PDF en memoria
     return pdf.output(dest='S').encode('latin1')
+
+def reporte_por_profesor(nombre_profesor):
+    conn = sqlite3.connect('asistencia.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM asistencia_profesores WHERE nombre_profesor = ?", (nombre_profesor,))
+    datos = c.fetchall()
+    conn.close()
+    return datos
+
+def reporte_por_materia(materia):
+    conn = sqlite3.connect('asistencia.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM asistencia_profesores WHERE materia = ?", (materia,))
+    datos = c.fetchall()
+    conn.close()
+    return datos
+
+def calcular_estadisticas(datos):
+    total_clases = len(datos)
+    asistencias = sum(1 for d in datos if d[6] == 'Sí')
+    inasistencias = total_clases - asistencias
+    tasa_asistencia = (asistencias / total_clases) * 100 if total_clases else 0
+    return total_clases, asistencias, inasistencias, tasa_asistencia
+
+def reporte_profesor():
+    reporte_tipo = st.selectbox("Seleccione el tipo de reporte", ["Por Profesor", "Por Materia"])
+    profesores = st.session_state['profesores']
+    if reporte_tipo == "Por Profesor":
+        materia = st.selectbox("Seleccione la Materia", list(profesores.keys()))
+        nombre_profesor = st.selectbox("Seleccione el Profesor", profesores[materia])
+        nombre = nombre_profesor
+    else:
+        materia = st.selectbox("Seleccione la Materia", list(profesores.keys()))
+        nombre = materia
+
+    if st.button("Generar Reporte"):
+        if reporte_tipo == "Por Profesor":
+            datos = reporte_por_profesor(nombre)
+            tipo_reporte = "Profesor"
+        else:
+            datos = reporte_por_materia(nombre)
+            tipo_reporte = "Materia"
+
+        if datos:
+            total_clases, asistencias, inasistencias, tasa_asistencia = calcular_estadisticas(datos)
+            st.write(f"Total de clases: {total_clases}")
+            st.write(f"Asistencias: {asistencias}")
+            st.write(f"Inasistencias: {inasistencias}")
+            st.write(f"Tasa de asistencia: {tasa_asistencia:.2f}%")
+
+            pdf = crear_pdf(datos, tipo_reporte, nombre)
+            st.download_button(
+                label="Descargar reporte en PDF",
+                data=pdf,
+                file_name=f'reporte_asistencia_{tipo_reporte}_{nombre}.pdf',
+                mime="application/octet-stream"
+            )
+        else:
+            st.write(
+    )
+
 
 def registrar_asistencia():
     carrera=st.session_state['carrera']
@@ -112,14 +173,7 @@ def mostrar_asistencia():
         st.write(pd.DataFrame(datos, columns=['ID', 'Nombre del Profesor', 'Fecha', 'Materia', 'Día de la Semana', 'Horario', 'Asistencia','Carrera']))
     else:
         st.write("No hay registros de asistencia")
-    pdf = crear_pdf(datos)
-    st.download_button(
-        label="Descargar reporte en PDF",
-        data=pdf,
-        file_name="reporte_asistencia.pdf",
-        mime="application/pdf"
-    )
-
+    
 def main(carrera):
     # Conexión a la base de datos
     conn = sqlite3.connect('asistencia.db')
@@ -151,12 +205,13 @@ def main(carrera):
             st.session_state['horario']=info.horario_iset
             st.session_state['profesores']=info.profesores_iset
     st.header(carrera)
-    opcion = st.sidebar.selectbox("Seleccione una opción", ["Registrar Asistencia", "Mostrar Asistencia"])
+    opcion = st.sidebar.selectbox("Seleccione una opción", ["Registrar Asistencia", "Mostrar Asistencia General","Reporte Estadistico"])
     if opcion == "Registrar Asistencia":
         registrar_asistencia()
-    elif opcion == "Mostrar Asistencia":
+    elif opcion == "Mostrar Asistencia General":
         mostrar_asistencia()
-
+    elif opcion == "Reporte Estadistico":
+        reporte_profesor()
     if st.button("Finalizar registro"):
         return True
     # Guardar y cerrar la conexión a la base de datos
