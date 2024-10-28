@@ -43,7 +43,7 @@ def crear_pdf(datos, tipo_reporte, nombre):
         pdf.cell(widths[7], 10, dato[7], 1)
         pdf.ln()
 
-    return pdf.output(dest='S').encode(
+    return pdf.output(dest='S').encode('latin1')
 
 def reporte_por_profesor(nombre_profesor):
     conn = sqlite3.connect('asistencia.db')
