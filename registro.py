@@ -18,9 +18,8 @@ fechasRegistradas = []  # Almacena las fechas ya registradas
 
 def crear_pdf(datos, tipo_reporte, nombre):
     # Crear una instancia de FPDF
-    pdf = FPDF()
+    pdf = FPDF(orientacion="L")
     pdf.set_auto_page_break(auto=True, margin=15)
-
     # Agregar una página
     pdf.add_page()
 
