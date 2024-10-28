@@ -110,7 +110,7 @@ horario_ici = {
                  '13:00-15:00': 'Ingles III'},
     'Friday': {'09:15-11:00': 'Ecuaciones Diferenciales',
                '11:00-12:00': 'Metodos Numericos',
-               '13:00-15:00': 'Estructura de datos',
+               '13:00-15:00': 'Estructura de Datos',
                }
 }
 
