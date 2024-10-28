@@ -159,7 +159,7 @@ profesores_ime = {
     'Métodos Numericos': ['Alcaraz Valencia Pablo Armando'],
     'Dinámica': ['Villalobos Llamas Gilberto'],
     'Tecnologia De Los Materiales': ['Cárdenas Rodriguez Selene'],
-    'Circutos 1': ['Jardines González Arturo Iván'],
+    'Circuitos 1': ['Jardines González Arturo Iván'],
     'Electrónica': ['Mora Quiñones Jesús Uriel'],
     'Ingles': ['Benavides Sánchez Luis Daniel'],
     'Orientación Educativa': ['Valdivia Carvajal Dafnis'],
