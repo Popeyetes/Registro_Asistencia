@@ -17,33 +17,21 @@ if 'profesores' not in st.session_state:
 fechasRegistradas = []  # Almacena las fechas ya registradas
 
 def crear_pdf(datos, tipo_reporte, nombre):
-    # Crear una instancia de FPDF
-    pdf = FPDF(orientacion='L', unit = 'mm', format = 'legal')
+    pdf = FPDF(orientation='L', unit='mm', format='legal')  # Página horizontal y tamaño hoja oficio
     pdf.set_auto_page_break(auto=True, margin=15)
-    # Agregar una página
     pdf.add_page()
-    
-    # Establecer el tipo de fuente (Arial, negrita, tamaño 16)
     pdf.set_font('Arial', 'B', 16)
-
-    # Título del reporte
-    pdf.cell(0, 10, 'Reporte de Asistencia', 0, 1, 'C')
-
-    # Espacio adicional
+    pdf.cell(0, 10, f'Reporte de Asistencia - {tipo_reporte}', 0, 1, 'C')
+    pdf.cell(0, 10, f'{nombre}', 0, 1, 'C')
     pdf.ln(10)
-
-    # Establecer el tipo de fuente para el contenido (Arial, tamaño 12)
-    pdf.set_font('Arial', '', 9)
-
-    # Encabezados de la tabla
+    pdf.set_font('Arial', '', 12)
     header = ['ID', 'Nombre', 'Fecha', 'Materia', 'Día', 'Horario', 'Asistencia', 'Carrera']
-    widths = [10, 35, 20, 30, 20, 30, 20, 20]
+    widths = [15, 40, 30, 35, 30, 40, 30, 30]
 
     for i, heading in enumerate(header):
         pdf.cell(widths[i], 10, heading, 1)
     pdf.ln()
 
-    # Agregar los registros de materias al PDF
     for dato in datos:
         pdf.cell(widths[0], 10, str(dato[0]), 1)
         pdf.cell(widths[1], 10, dato[1], 1)
@@ -55,8 +43,7 @@ def crear_pdf(datos, tipo_reporte, nombre):
         pdf.cell(widths[7], 10, dato[7], 1)
         pdf.ln()
 
-    # Guardar el archivo PDF en memoria
-    return pdf.output(dest='S').encode('latin1')
+    return pdf.output(dest='S').encode(
 
 def reporte_por_profesor(nombre_profesor):
     conn = sqlite3.connect('asistencia.db')
